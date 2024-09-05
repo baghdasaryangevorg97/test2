@@ -33,6 +33,8 @@ class TaskService
      */
     public function create(array $data): Task
     {
+        $data = array_merge($data, ['user_id' => auth()->id()]);
+        
         return $this->taskRepository->create($data);
     }
 
