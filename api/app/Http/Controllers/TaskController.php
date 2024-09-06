@@ -37,11 +37,15 @@ class TaskController extends Controller
      * @param TaskRequest $request
      * @return TaskResource
      */
-    public function store(TaskRequest $request): TaskResource
+    public function store(TaskRequest $request): TaskResource|JsonResponse
     {
-        $task = $this->taskService->create($request->validated());
+        $data = $this->taskService->create($request->validated());
 
-        return new TaskResource($task);
+        if(is_array($data)) {
+            return response()->json(['message' => $data['message'], 'success' => $data['success']], 422);
+        }
+
+        return new TaskResource($data);
     }
 
     /**
@@ -64,11 +68,15 @@ class TaskController extends Controller
      * @param int $id
      * @return TaskResource
      */
-    public function update(TaskRequest $request, int $id): TaskResource
+    public function update(TaskRequest $request, int $id): TaskResource|JsonResponse
     {
-        $task = $this->taskService->update($request->validated(), $id);
+        $data = $this->taskService->update($request->validated(), $id);
 
-        return new TaskResource($task);
+        if(is_array($data)) {
+            return response()->json(['message' => $data['message'], 'success' => $data['success']], 422);
+        }
+
+        return new TaskResource($data);
     }
 
     /**

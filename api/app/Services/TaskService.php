@@ -31,11 +31,17 @@ class TaskService
      * Create a new task.
      *
      * @param array $data
-     * @return Task
+     * @return Task|array
      */
-    public function create(array $data): Task
+    public function create(array $data): Task|array
     {
         $data = array_merge($data, ['user_id' => auth()->id()]);
+
+        if(!isset($data['completed_at']) && $data['status'] == "completed") {
+            return ['message' => 'Task status cannot be completed without a date.', 'success' => false];
+        }elseif (isset($data['completed_at']) && $data['status'] != "completed") {
+            return ['message' => 'Completted date is only allowed for completed status.', 'success' => false];
+        }
 
         return $this->taskRepository->create($data);
     }
@@ -56,12 +62,16 @@ class TaskService
      *
      * @param array $data
      * @param int $id
-     * @return Task
+     * @return Task|array
      */
-    public function update(array $data, int $id): Task
+    public function update(array $data, int $id): Task|array
     {
+        if(isset($data['completed_at']) && $data['status'] != "completed") {
+            return ['message' => 'Completted date is only allowed for completed status.', 'success' => false];
+        }
+
         if($data['status'] == "completed") {
-            $data['completed_at'] = Carbon::now();
+            $data['completed_at'] = Carbon::now()->format('Y-m-d H:i:s');
         }else {
             $data['completed_at'] = null;
         }
