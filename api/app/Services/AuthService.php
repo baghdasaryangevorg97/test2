@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\Services;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -9,7 +9,7 @@ use Illuminate\Auth\AuthenticationException;
 
 class AuthService
 {
-    public function register(array $data): string
+    public function register(array $data): array
     {
         $user = User::create([
             'name' => $data['name'],
@@ -19,15 +19,11 @@ class AuthService
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        return $token;
+        return ['token' => $token, 'user' => $user];
     }
 
-    public function login(): string
+    public function login($user): string
     {
-        $user = Auth::user();
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return $token;
-
+        return $user->createToken('auth_token')->plainTextToken;
     }
 }

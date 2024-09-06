@@ -23,7 +23,8 @@ const Task = () => {
         try {
             const config = {
                 method: "get",
-                url: "/v1/tasks",
+                url: "/v1/
+                ",
             };
 
             const response = await instance(config);

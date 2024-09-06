@@ -79,8 +79,12 @@ class TaskController extends Controller
      */
     public function destroy(int $id): JsonResponse
     {
-        $this->taskService->destroy($id);
+        $removed = $this->taskService->destroy($id);
 
-        return response()->json(null, Response::HTTP_NO_CONTENT);
+        if (!$removed) {
+            return response()->json(null, Response::HTTP_NOT_FOUND);
+        }
+
+        return response()->json(['message' => 'Task deleted successfully'], Response::HTTP_OK);
     }
 }

@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Api\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SigninRequest;
 use App\Http\Requests\SignupRequest;
-use App\Service\AuthService;
+use App\Models\User;
+use App\Services\AuthService;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
@@ -20,9 +23,14 @@ class AuthController extends Controller
     public function register(SignupRequest $request)
     {
         try {
-            $token = $this->authService->register($request->all());
+            $data = $this->authService->register($request->all());
 
-            return response()->json(['message' => 'User registered successfully', 'success' => true, 'token' => $token], 201);
+            return response()->json([
+                'message' => 'User registered successfully',
+                'success' => true,
+                'user' => $data['user'],
+                'token' => $data['token']
+            ], 201);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Registration failed', 'success' => false, 'error' => $e->getMessage()], 500);
         }
@@ -31,15 +39,19 @@ class AuthController extends Controller
     public function login(SigninRequest $request)
     {
 
-        if (!auth()->attempt($request->only('email', 'password'))) {
-            return response()->json(['message' => 'Invalid credentials', 'success' => false], 401);
+        $user = User::where('email', $request->email)->first();
+
+        if (! $user || ! Hash::check($request->password, $user->password)) {
+            throw ValidationException::withMessages([
+                'email' => ['The provided credentials are incorrect.'],
+            ]);
         }
 
-        $token = $this->authService->login();
+        $token = $this->authService->login($user);
 
         return response()->json([
-            'token' => $token
+            'token' => $token,
+            'user' => $user
         ], 200);
-        
     }
 }

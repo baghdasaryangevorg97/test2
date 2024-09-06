@@ -45,11 +45,14 @@ class TaskRepository implements TaskInterface
      *
      * @param array $data
      * @param int $id
-     * @return bool
+     * @return Task
      */
-    public function update(array $data, int $id): bool
+    public function update(array $data, int $id): Task
     {
-        return Task::where('id', $id)->update($data) > 0;
+        $task = Task::find($id);
+        $task->update($data);
+
+        return $task;
     }
 
     /**

@@ -35,9 +35,9 @@ interface TaskInterface
      *
      * @param array $data
      * @param int $id
-     * @return bool
+     * @return Task
      */
-    public function update(array $data, int $id): bool;
+    public function update(array $data, int $id): Task;
 
     /**
      * Remove a task by its ID.

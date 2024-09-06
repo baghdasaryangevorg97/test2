@@ -3,6 +3,9 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -12,7 +15,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->append(StartSession::class);
+        $middleware->append(VerifyCsrfToken::class);
+        $middleware->validateCsrfTokens(except: [
+            'http://127.0.0.1:8000/*',
+            'http://localhost:8000/*',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
