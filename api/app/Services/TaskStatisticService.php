@@ -3,10 +3,6 @@
 namespace App\Services;
 
 use App\Contracts\TaskInterface;
-use App\Models\Task;
-use Illuminate\Database\Eloquent\Collection;
-use App\Notifications\TaskDeadlineNotification;
-use Carbon\Carbon;
 
 class TaskStatisticService
 {
