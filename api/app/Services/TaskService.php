@@ -43,6 +43,10 @@ class TaskService
             return ['message' => 'Completted date is only allowed for completed status.', 'success' => false];
         }
 
+        if($data['status'] == "in_progress") {
+            $data['started_at'] = Carbon::now()->format('Y-m-d H:i:s'); 
+        }
+
         return $this->taskRepository->create($data);
     }
 
@@ -74,6 +78,14 @@ class TaskService
             $data['completed_at'] = Carbon::now()->format('Y-m-d H:i:s');
         }else {
             $data['completed_at'] = null;
+        }
+
+        if($data['status'] == "in_progress") {
+            $data['started_at'] = Carbon::now()->format('Y-m-d H:i:s'); 
+        }
+
+        if($data['status'] == "pending") {
+            $data['started_at'] = null;
         }
 
         return $this->taskRepository->update($data, $id);

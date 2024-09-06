@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Contracts\TaskInterface;
 use App\Models\Task;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 
 class TaskRepository implements TaskInterface
@@ -65,4 +66,69 @@ class TaskRepository implements TaskInterface
     {
         return Task::where('id', $id)->where('user_id', auth()->id())->delete() > 0;
     }
+
+    /**
+     * Get task Statistics By Status.
+     *
+     * @param int $id
+     * @return array
+     */
+    public function getStatisticsByStatus(): array
+    {
+        return Task::select('status', \DB::raw('count(*) as total'))
+            ->groupBy('status')
+            ->get()
+            ->pluck('total', 'status')
+            ->toArray();
+    }
+
+    /**
+     * Get expired count of task.
+     *
+     * @return array
+     */
+    public function getTaskExpiredCount(): int
+    {
+        return Task::where('due_date', '<', Carbon::now())
+            ->count();
+    }
+
+    /**
+     * Get task total count.
+     *
+     * @return array
+     */
+    public function getTaskTotalCount(): int
+    {
+        return Task::count();
+    }
+
+    /**
+     * Get task Statistics By Status.
+     *
+     * @param int $id
+     * @return array
+     */
+    public function getUserStatisticsCountByStatus($id): array
+    {
+        return Task::where('user_id', $id)->select('status', \DB::raw('count(*) as total'))
+            ->groupBy('status')
+            ->get()
+            ->pluck('total', 'status')
+            ->toArray();
+    }
+
+    /**
+     * Get user task count By Status.
+     * @param int $id
+     * @return int
+     */
+    public function getUserAverageTaskCompletedTime($id): int
+    {
+        return Task::where('user_id', $id)->where('status', 'completed')->whereNotNull('completed_at')->whereNotNull('started_at')
+            ->select(\DB::raw('AVG(TIMESTAMPDIFF(MINUTE, started_at, completed_at)) as avg_completion_time'))
+            ->value('avg_completion_time');
+    }
+
+
 }

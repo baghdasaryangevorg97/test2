@@ -46,4 +46,40 @@ interface TaskInterface
      * @return bool
      */
     public function removeTaskById(int $id): bool;
+
+    /**
+     * Get task Statistics By Status.
+     *
+     * @return array
+     */
+    public function getStatisticsByStatus(): array;
+
+    /**
+     * Get expired count of task.
+     *
+     * @return array
+     */
+    public function getTaskExpiredCount(): int;
+
+    /**
+     * Get task total count.
+     *
+     * @return array
+     */
+    public function getTaskTotalCount(): int;
+
+     /**
+     * Get user task count By Status.
+     * @param int $id
+     * @return array
+     */
+    public function getUserStatisticsCountByStatus($id): array;
+
+    /**
+     * Get user task count By Status.
+     * @param int $id
+     * @return int
+     */
+    public function getUserAverageTaskCompletedTime($id): int;
+
 }
